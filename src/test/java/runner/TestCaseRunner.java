@@ -10,7 +10,9 @@ import org.junit.runner.RunWith;
         features = "src\\test\\resources\\features",
         tags = "@WebView",
         glue = {"stepDefinitions", "Hooks"},
-        plugin = {"pretty", "html:target\\cucumber-reports\\report.html"},
+        plugin = {"pretty",
+                "html:target\\cucumber-reports\\report.html"
+        },
         stepNotifications = true
 )
 

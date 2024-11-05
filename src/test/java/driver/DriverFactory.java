@@ -1,11 +1,13 @@
 package driver;
 
 import driver_manager.AndroidDriverManager;
+import driver_manager.BrowserStackDriverManager;
 import driver_manager.IOSDriverManager;
 import org.openqa.selenium.WebDriver;
 
 import java.net.MalformedURLException;
 
+import static Hooks.Hooks.properties;
 import static context.WebDriverContext.setDriver;
 
 public class DriverFactory {
@@ -15,15 +17,20 @@ public class DriverFactory {
         WebDriver driver = null;
         PlatformList platformType = PlatformList.valueOf(platform.toUpperCase());
 
-        switch (platformType) {
-            case ANDROID:
-                driver = new AndroidDriverManager().createInstance();
-                setDriver(driver);
-                break;
-            case IOS:
-                driver = new IOSDriverManager().createInstance();
-                setDriver(driver);
-                break;
+        if (Boolean.parseBoolean(properties.getProperty("use.browserstack"))) {
+            driver = new BrowserStackDriverManager().createInstance();
+        }else{
+
+            switch (platformType) {
+                case ANDROID:
+                    driver = new AndroidDriverManager().createInstance();
+                    setDriver(driver);
+                    break;
+                case IOS:
+                    driver = new IOSDriverManager().createInstance();
+                    setDriver(driver);
+                    break;
+            }
         }
     }
 

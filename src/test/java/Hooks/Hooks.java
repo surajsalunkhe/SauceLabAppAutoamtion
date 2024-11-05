@@ -1,7 +1,9 @@
 package Hooks;
 
 import com.aventstack.extentreports.Status;
+import driver.DriverFactory;
 import driver_manager.AndroidDriverManager;
+import driver_manager.BrowserStackDriverManager;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
@@ -13,6 +15,7 @@ import utils.AppiumServerUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Properties;
 
 import static context.WebDriverContext.getDriver;
@@ -27,6 +30,7 @@ import static utils.Constants.configFile;
 public class Hooks {
     public Scenario scenario;
     public static Properties properties = new Properties();
+    private BrowserStackDriverManager browserStackDriverManager;
     AppiumServerUtil appiumServerUtil=new AppiumServerUtil();
 
     /*This method is used to initialize the current scenario being executed */
@@ -48,14 +52,23 @@ public class Hooks {
 
     @Before(order = 2)
     public void invokeAppium() {
-        String system = System.getProperty("os.name").toLowerCase();
-        try {
-            //stop appium server if existing running
-            appiumServerUtil.stopAppiumServer();
-            //Start new session of appium
-            appiumServerUtil.startAppiumServer(system);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        if (Boolean.parseBoolean(properties.getProperty("use.browserstack"))) {
+            browserStackDriverManager = new BrowserStackDriverManager();
+            try {
+                DriverFactory.createMobileInstance(properties.getProperty("platform"));
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+        }else{
+            String system = System.getProperty("os.name").toLowerCase();
+            try {
+                //stop appium server if existing running
+                appiumServerUtil.stopAppiumServer();
+                //Start new session of appium
+                appiumServerUtil.startAppiumServer(system);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
