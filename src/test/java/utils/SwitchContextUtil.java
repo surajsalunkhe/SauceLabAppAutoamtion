@@ -5,6 +5,7 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.Set;
 
@@ -35,41 +36,31 @@ public class SwitchContextUtil {
     public static void changeDriverContext(WebDriver driver, String contextType, String platform) {
         Set<String> contextNames;
 
-        switch (platform.toLowerCase()) {
-            case "android":
-                if (driver instanceof AndroidDriver) {
-                    contextNames = ((AndroidDriver) driver).getContextHandles();
-                    for (String contextName : contextNames) {
-                        if (contextName.contains(contextType)) {
-                            ((AndroidDriver) driver).context(contextName);
-                            getTest().log(Status.PASS, "Changed 'android' driver context to " + contextType);
-                            return;
-                        }
-                    }
-                } else {
-                    throw new IllegalArgumentException("Driver is not an instance of AndroidDriver.");
+        if (driver instanceof AndroidDriver) {
+            AndroidDriver androidDriver = (AndroidDriver) driver;
+            contextNames = androidDriver.getContextHandles();
+            for (String contextName : contextNames) {
+                if (contextName.contains(contextType)) {
+                    androidDriver.context(contextName);
+                    getTest().log(Status.PASS, "Changed 'android' driver context to " + contextType);
+                    return;
                 }
-                break;
-
-            case "ios":
-                if (driver instanceof IOSDriver) {
-                    contextNames = ((IOSDriver) driver).getContextHandles();
-                    for (String contextName : contextNames) {
-                        if (contextName.contains(contextType)) {
-                            ((IOSDriver) driver).context(contextName);
-                            getTest().log(Status.PASS, "Changed 'ios' driver context to " + contextType);
-                            return;
-                        }
-                    }
-                } else {
-                    throw new IllegalArgumentException("Driver is not an instance of IOSDriver.");
+            }
+        } else if (driver instanceof IOSDriver) {
+            IOSDriver iosDriver = (IOSDriver) driver;
+            contextNames = iosDriver.getContextHandles();
+            for (String contextName : contextNames) {
+                if (contextName.contains(contextType)) {
+                    iosDriver.context(contextName);
+                    getTest().log(Status.PASS, "Changed 'ios' driver context to " + contextType);
+                    return;
                 }
-                break;
-
-            default:
-                throw new IllegalArgumentException("Unsupported platform: " + platform);
+            }
+        } else {
+            throw new IllegalArgumentException("Unsupported driver type: " + driver.getClass().getSimpleName());
         }
 
         throw new IllegalStateException("Failed to change driver context to " + contextType);
     }
+
 }

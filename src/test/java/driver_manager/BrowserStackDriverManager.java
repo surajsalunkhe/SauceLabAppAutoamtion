@@ -3,7 +3,10 @@ package driver_manager;
 import driver.Driver;
 import com.browserstack.local.Local;
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.ios.IOSDriver;
 import org.openqa.selenium.SessionNotCreatedException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.net.URL;
@@ -19,6 +22,7 @@ public class BrowserStackDriverManager implements Driver {
 
     private static final String BROWSERSTACK_USERNAME = properties.getProperty("browserstack.username");
     private static final String BROWSERSTACK_ACCESS_KEY = properties.getProperty("browserstack.accessKey");
+    private static final String BROWSERSTACK_HUB_URL = "http://hub-cloud.browserstack.com/wd/hub";
 
     private Local local;
 
@@ -33,7 +37,7 @@ public class BrowserStackDriverManager implements Driver {
      * @return
      */
     @Override
-    public AppiumDriver createInstance() {
+    public WebDriver createInstance() {
         DesiredCapabilities caps = new DesiredCapabilities();
         // Set device-specific capabilities
         if (properties.getProperty("platform").equalsIgnoreCase("android")) {
@@ -50,9 +54,6 @@ public class BrowserStackDriverManager implements Driver {
 
         // Set other BrowserStack capabilities
         caps.setCapability("bstack:options",  getCommonBsOptions());
-        //caps.setCapability("project", "Sauce Labs Mobile App");
-        //caps.setCapability("build", "Build 1.0");
-        //caps.setCapability("name", "Sauce Labs Test");
         caps.setCapability("appium:newCommandTimeout", 300);
 
         // Start the BrowserStack Local binary if needed
@@ -64,12 +65,18 @@ public class BrowserStackDriverManager implements Driver {
             }
             caps.setCapability("browserstack.local", "true");
         }
-
         try {
-            return new AppiumDriver(new URL("http://hub-cloud.browserstack.com/wd/hub"),caps);
-        }catch (SessionNotCreatedException e) {
-            System.err.println("Session could not be created. Details: " + e.getMessage());
-            throw e;
+            if (properties.getProperty("platform").equalsIgnoreCase("android")) {
+                AndroidDriver driver =new AndroidDriver(new URL(BROWSERSTACK_HUB_URL), caps);
+                System.out.println("Android driver created successfully");
+                return driver;
+            } else if (properties.getProperty("platform").equalsIgnoreCase("ios")) {
+                IOSDriver driver=new IOSDriver(new URL(BROWSERSTACK_HUB_URL), caps);
+                System.out.println("iOS driver created successfully");
+                return driver;
+            } else {
+                throw new IllegalArgumentException("Unsupported platform: " + properties.getProperty("platform"));
+            }
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
