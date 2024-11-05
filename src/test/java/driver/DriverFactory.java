@@ -19,6 +19,7 @@ public class DriverFactory {
 
         if (Boolean.parseBoolean(properties.getProperty("use.browserstack"))) {
             driver = new BrowserStackDriverManager().createInstance();
+            setDriver(driver);
         }else{
 
             switch (platformType) {

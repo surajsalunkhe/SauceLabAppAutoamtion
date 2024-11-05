@@ -24,13 +24,9 @@ public class BrowserStackDriverManager implements Driver {
 
     public static HashMap<String,Object> getCommonBsOptions(){
         HashMap<String, Object> bstackOptions = new HashMap<>();
-        bstackOptions.put("userName", "prathamesh_qZuHcW");
-        bstackOptions.put("accessKey", "NitDT7PTzzpBRaqwFjcs");
-        if (properties.getProperty("platform").equalsIgnoreCase("android")) {
-        bstackOptions.put("appiumVersion", "2.6.0");
-        }else{
-            bstackOptions.put("appiumVersion", "2.0.1");
-        }
+        bstackOptions.put("userName", BROWSERSTACK_USERNAME);
+        bstackOptions.put("accessKey", BROWSERSTACK_ACCESS_KEY);
+        bstackOptions.put("appiumVersion", "2.0.1");
         return bstackOptions;
     }
     /**
@@ -41,19 +37,15 @@ public class BrowserStackDriverManager implements Driver {
         DesiredCapabilities caps = new DesiredCapabilities();
         // Set device-specific capabilities
         if (properties.getProperty("platform").equalsIgnoreCase("android")) {
-            //caps.setCapability("device", properties.getProperty("browserstack.android.device"));
-            //caps.setCapability("os_version", properties.getProperty("browserstack.android.version"));
             caps.setCapability("platformName", "android");
             caps.setCapability("appium:platformVersion", "12.0");
             caps.setCapability("appium:deviceName", "Samsung Galaxy S22 Ultra");
-            caps.setCapability("appium:app", "bs://891cc0565af3aaa88147c7de29eca66e18a62ee3");
+            caps.setCapability("appium:app", "bs://a919ec50939a98d93baef4c0d6c6d4c958b642b2");
         } else if (properties.getProperty("platform").equalsIgnoreCase("ios")) {
             caps.setCapability("platformName", "ios");
             caps.setCapability("appium:platformVersion", "14.0");
             caps.setCapability("appium:deviceName", "iPhone 12 Pro Max");
-            //caps.setCapability("device", properties.getProperty("browserstack.ios.device"));
-            //caps.setCapability("os_version", properties.getProperty("browserstack.ios.version"));
-            caps.setCapability("appium:app", "bs://dcb89b7bc839f1aa4984cba6da41881e363be80d");
+            caps.setCapability("appium:app", "bs://408f9f93049e0a468949c00af2fc1ce39b3cbe31");
         }
 
         // Set other BrowserStack capabilities

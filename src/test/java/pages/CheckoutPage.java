@@ -2,6 +2,7 @@ package pages;
 
 import com.aventstack.extentreports.Status;
 import io.appium.java_client.pagefactory.AndroidFindBy;
+import io.appium.java_client.pagefactory.iOSXCUITBy;
 import io.cucumber.datatable.DataTable;
 import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
@@ -14,15 +15,24 @@ import static report_manager.ExtentTestManager.getTest;
 
 public class CheckoutPage extends BasePage {
 
-    @AndroidFindBy(xpath = "//android.widget.TextView[contains(@text, \"CHECKOUT\")]")
+    @AndroidFindBy(accessibility = "test-CHECKOUT")
+    @iOSXCUITBy(accessibility = "test-CHECKOUT")
     private WebElement checkoutLabel;
+
     @AndroidFindBy(accessibility = "test-First Name")
+    @iOSXCUITBy(accessibility = "test-First Name")
     private WebElement firstNameTextBox;
+
     @AndroidFindBy(accessibility = "test-Last Name")
+    @iOSXCUITBy(accessibility = "test-Last Name")
     private WebElement lastNameTextBox;
+
     @AndroidFindBy(accessibility = "test-Zip/Postal Code")
+    @iOSXCUITBy(accessibility = "test-Zip/Postal Code")
     private WebElement zipCodeTextBox;
+
     @AndroidFindBy(xpath = "//android.widget.TextView[@text=\"THANK YOU FOR YOU ORDER\"]")
+    @iOSXCUITBy(xpath = "//XCUIElementTypeStaticText[contains(@label, \"THANK YOU FOR YOUR ORDER\")]")
     private WebElement orderPlacedMessageLabel;
 
     public CheckoutPage(WebDriver driver) {
