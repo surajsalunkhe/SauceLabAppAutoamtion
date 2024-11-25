@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         monochrome = true,
         features = "src\\test\\resources\\features",
-        tags = "@WebView",
+        tags = "@SauceLabAppTC",
         glue = {"stepDefinitions", "Hooks"},
         plugin = {"pretty",
                 "html:target\\cucumber-reports\\report.html"

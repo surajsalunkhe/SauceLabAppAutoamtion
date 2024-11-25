@@ -15,33 +15,28 @@ import static report_manager.ExtentTestManager.getTest;
 
 public class HomePage extends BasePage {
 
-    @AndroidFindBy(xpath = "//android.widget.TextView[@text=\"PRODUCTS\"]")
-    @iOSXCUITFindBy(xpath = "//XCUIElementTypeStaticText[@name=\"PRODUCTS\"]")
+    @AndroidFindBy(xpath = "//android.widget.TextView[@text='PRODUCTS']")
+    @iOSXCUITFindBy(xpath = "//XCUIElementTypeStaticText[@name='PRODUCTS']")
     private WebElement productsLabel;
+
     @AndroidFindBy(accessibility = "test-Modal Selector Button")
     @iOSXCUITFindBy(accessibility = "test-Modal Selector Button")
     private WebElement filterIcon;
 
-    private String elementXpath;
-    private String filterOptionXpath;
-    private String selectProductXpath;
+    private static final String ANDROID_ELEMENT_XPATH = "//android.view.ViewGroup[@content-desc='test-%s']";
+    private static final String IOS_ELEMENT_XPATH = "//XCUIElementTypeOther[@name='test-%s']";
+
+    private static final String ANDROID_FILTER_OPTION_XPATH = "//android.widget.TextView[@text='%s']";
+    private static final String IOS_FILTER_OPTION_XPATH = "//XCUIElementTypeStaticText[@label='%s']";
+
+    private static final String ANDROID_SELECT_PRODUCT_XPATH = "//android.widget.TextView[@content-desc='test-Item title' and @text='%s']";
+    private static final String IOS_SELECT_PRODUCT_XPATH = "//XCUIElementTypeStaticText[@name='test-Item title' and @label='%s']";
 
     public HomePage(WebDriver driver) {
         super(driver);
-        if (properties.getProperty("platform").equalsIgnoreCase("android")) {
-            // Android XPaths
-            elementXpath = "//android.view.ViewGroup[@content-desc=\"test-<ELEMENT_NAME>\"]";
-            filterOptionXpath = "//android.widget.TextView[@text=\"<OPTION_NAME>\"]";
-            selectProductXpath = "//android.widget.TextView[@content-desc=\"test-Item title\" and @text=\"<PRODUCT_NAME>\"]";
-        } else if (properties.getProperty("platform").equalsIgnoreCase("android")) {
-            // iOS XPaths
-            elementXpath = "//XCUIElementTypeOther[@name=\"test-<ELEMENT_NAME>\"]";
-            filterOptionXpath = "//XCUIElementTypeStaticText[@label=\"<OPTION_NAME>\"]";
-            selectProductXpath = "//XCUIElementTypeStaticText[@name=\"test-Item title\" and @label=\"<PRODUCT_NAME>\"]";
-        }
     }
 
-        public void verifyHomePageIsDisplayed() {
+    public void verifyHomePageIsDisplayed() {
         waitFor.until(ExpectedConditions.visibilityOf(productsLabel));
         Assert.assertTrue("Home page is not displayed", productsLabel.isDisplayed());
         getTest().log(Status.PASS, "Home page is displayed");
@@ -49,16 +44,16 @@ public class HomePage extends BasePage {
     }
 
     public void clickElement(String elementName) {
-        String afterElementReplace=elementXpath.replaceAll("<ELEMENT_NAME>", elementName);
-        System.out.println(afterElementReplace);
-        waitFor.until(ExpectedConditions.visibilityOfElementLocated(AppiumBy.xpath(afterElementReplace)));
-        getDriver().findElement(AppiumBy.xpath(afterElementReplace)).click();
+        String xpath = getPlatformSpecificXpath(ANDROID_ELEMENT_XPATH, IOS_ELEMENT_XPATH, elementName);
+        //System.out.println(xpath);
+        waitFor.until(ExpectedConditions.visibilityOfElementLocated(AppiumBy.xpath(xpath)));
+        getDriver().findElement(AppiumBy.xpath(xpath)).click();
         getTest().log(Status.PASS, elementName + " button is clicked");
         System.out.println(elementName + " button is clicked");
     }
 
     /**
-     * This method is used to click filter icon on homepage
+     * This method is used to click filter icon on the homepage
      */
     public void clickFilterIcon() {
         waitFor.until(ExpectedConditions.visibilityOf(filterIcon));
@@ -68,28 +63,29 @@ public class HomePage extends BasePage {
     }
 
     /**
-     * This method is used click a specific filter option
-     * @param optionName    name of filter option to be selected
+     * This method is used to click a specific filter option
+     * @param optionName name of filter option to be selected
      */
     public void clickFilterOption(String optionName) {
-        String afterFilterReplace=filterOptionXpath.replaceAll("<OPTION_NAME>", optionName);
-        System.out.println(afterFilterReplace);
-        waitFor.until(ExpectedConditions.visibilityOfElementLocated(AppiumBy.xpath(afterFilterReplace)));
-        getDriver().findElement(AppiumBy.xpath(afterFilterReplace)).click();
+        String xpath = getPlatformSpecificXpath(ANDROID_FILTER_OPTION_XPATH, IOS_FILTER_OPTION_XPATH, optionName);
+        System.out.println(xpath);
+        waitFor.until(ExpectedConditions.visibilityOfElementLocated(AppiumBy.xpath(xpath)));
+        getDriver().findElement(AppiumBy.xpath(xpath)).click();
         getTest().log(Status.PASS, optionName + " filter option is clicked");
         System.out.println(optionName + " filter option is clicked");
     }
 
     /**
      * This method is used to select a specific product
-     * @param productName   name of product to be selected
+     * @param productName name of the product to be selected
      */
     public void selectProduct(String productName) {
-        String afterProductReplace=selectProductXpath.replaceAll("<PRODUCT_NAME>", productName);
-        System.out.println(afterProductReplace);
-        waitFor.until(ExpectedConditions.visibilityOfElementLocated(AppiumBy.xpath(afterProductReplace)));
-        getDriver().findElement(AppiumBy.xpath(afterProductReplace)).click();
+        String xpath = getPlatformSpecificXpath(ANDROID_SELECT_PRODUCT_XPATH, IOS_SELECT_PRODUCT_XPATH, productName);
+        System.out.println(xpath);
+        waitFor.until(ExpectedConditions.visibilityOfElementLocated(AppiumBy.xpath(xpath)));
+        getDriver().findElement(AppiumBy.xpath(xpath)).click();
         getTest().log(Status.PASS, productName + " product is selected");
         System.out.println(productName + " product is selected");
     }
 }
+

@@ -23,12 +23,11 @@ import static driver_manager.AndroidDriverManager.stopRecordingAndroid;
 import static report_manager.ExtentManager.extentReports;
 import static report_manager.ExtentTestManager.getTest;
 import static report_manager.ExtentTestManager.startTest;
-//import static utils.AppiumServerUtil.startAppiumServer;
-//import static utils.AppiumServerUtil.stopAppiumServer;
 import static utils.Constants.configFile;
 
 public class Hooks {
     public Scenario scenario;
+    private static boolean isAppiumServerRunning = false;
     public static Properties properties = new Properties();
     private BrowserStackDriverManager browserStackDriverManager;
     AppiumServerUtil appiumServerUtil=new AppiumServerUtil();
@@ -52,7 +51,32 @@ public class Hooks {
 
     @Before(order = 2)
     public void invokeAppium() {
-        if (Boolean.parseBoolean(properties.getProperty("use.browserstack"))) {
+        if (!isAppiumServerRunning) {
+            if (Boolean.parseBoolean(properties.getProperty("use.browserstack"))) {
+                browserStackDriverManager = new BrowserStackDriverManager();
+                try {
+                    DriverFactory.createMobileInstance(properties.getProperty("platform"));
+                } catch (MalformedURLException e) {
+                    throw new RuntimeException(e);
+                }
+            }else{
+                String system = System.getProperty("os.name").toLowerCase();
+                try {
+                    //stop appium server if existing running
+                    appiumServerUtil.stopAppiumServer();
+                    //Start new session of appium
+                    appiumServerUtil.startAppiumServer(system);
+                    isAppiumServerRunning = true;
+                    System.out.println("Starting appium server wait for 5 seconds");
+                    Thread.sleep(5000);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        } else {
+            System.out.println("Appium server is already running.");
+        }
+        /*if (Boolean.parseBoolean(properties.getProperty("use.browserstack"))) {
             browserStackDriverManager = new BrowserStackDriverManager();
             try {
                 DriverFactory.createMobileInstance(properties.getProperty("platform"));
@@ -66,10 +90,12 @@ public class Hooks {
                 appiumServerUtil.stopAppiumServer();
                 //Start new session of appium
                 appiumServerUtil.startAppiumServer(system);
+                System.out.println("Starting appium server wait for 5 seconds");
+                Thread.sleep(5000);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }
+        }*/
     }
 
     @After(order = 3)
@@ -98,7 +124,11 @@ public class Hooks {
     }
     @After(order = 0)
     public void stopAppium() {
-        appiumServerUtil.stopAppiumServer();
-        extentReports.flush();
+        if(isAppiumServerRunning){
+            appiumServerUtil.stopAppiumServer();
+            isAppiumServerRunning = false;
+            extentReports.flush();
+            System.out.println("Appium server stopped.");
+        }
     }
 }

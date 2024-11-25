@@ -6,6 +6,8 @@ import io.appium.java_client.service.local.AppiumServiceBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static report_manager.ExtentTestManager.getTest;
 
@@ -44,7 +46,25 @@ public class AppiumServerUtil {
 
     private void startAppiumProcess() {
         try {
-            ProcessBuilder processBuilder = new ProcessBuilder(nodePath, appiumPath, "--address", hostIPAddress, "--port", String.valueOf(port));
+            List<String> command = new ArrayList<>();
+
+            // Add node and appium paths
+            command.add(nodePath);
+            command.add(appiumPath);
+
+            // Add server arguments
+            command.add("--address");
+            command.add(hostIPAddress);
+            command.add("--port");
+            command.add(String.valueOf(port));
+            // Add the log level argument
+            command.add("--log-level");
+            command.add("error");
+            // Add the allow-insecure argument for chromedriver_autodownload
+            command.add("--allow-insecure");
+            command.add("chromedriver_autodownload");
+            //ProcessBuilder processBuilder = new ProcessBuilder(nodePath, appiumPath, "--address", hostIPAddress, "--port", String.valueOf(port));
+            ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.inheritIO(); // Inherit I/O for logging
             appiumProcess = processBuilder.start();
             getTest().log(Status.INFO, "Appium server started");

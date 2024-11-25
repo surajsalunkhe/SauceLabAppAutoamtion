@@ -22,8 +22,8 @@ public class CartSteps {
         cartPage.verifyProductDetailsInCart(productName);
     }
 
-    @Then("user should be displayed with price $9.99 in the cart")
-    public void user_should_be_displayed_with_price_$9_99_in_the_cart() {
-        cartPage.verifyProductPriceInCart();
+    @Then("user should be displayed with price {string} in the cart")
+    public void user_should_be_displayed_with_price_in_the_cart(String expectedPrice) {
+        cartPage.verifyProductPriceInCart(expectedPrice);
     }
 }

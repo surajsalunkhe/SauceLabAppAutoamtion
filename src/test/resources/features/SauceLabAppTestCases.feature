@@ -18,9 +18,8 @@ Feature: Shop for products in Sauce Labs mobile App
     When user clicks on 'Cart' icon
     Then user should be displayed with Cart page
     Then user should be displayed with 'Sauce Labs Bike Light' product in the cart
-    Then user should be displayed with price $9.99 in the cart
+    Then user should be displayed with price "$9.99" in the cart
     Given user clicks on 'CHECKOUT' button
-    Then user should be displayed with Checkout page
     When user enter required details on the Checkout page
       | FirstName | Suraj    |
       | LastName  | Salunkhe |

@@ -14,23 +14,24 @@ import static context.WebDriverContext.getDriver;
 import static report_manager.ExtentTestManager.getTest;
 
 public class CartPage extends BasePage {
-    private String productDetailsInCartXpath;
-    public CartPage(WebDriver driver) {
-        super(driver);
-        if (properties.getProperty("platform").equalsIgnoreCase("android")) {
-            productDetailsInCartXpath = "//android.widget.TextView[@text=\"<PRODUCT_DETAIL>\"]";
-        } else if (properties.getProperty("platform").equalsIgnoreCase("ios")) {
-            productDetailsInCartXpath = "//XCUIElementTypeStaticText[@label=\"<PRODUCT_DETAIL>\"]";
-        }
-    }
 
-    @AndroidFindBy(xpath = "//android.widget.TextView[@text=\"YOUR CART\"]")
+    @AndroidFindBy(xpath = "//android.widget.TextView[@text='YOUR CART']")
     @iOSXCUITFindBy(accessibility = "test-ADD TO CART")
     private WebElement yourCartLabel;
 
-    @AndroidFindBy(xpath = "//android.widget.TextView[@text=\"$9.99\"]")
-    @iOSXCUITFindBy(xpath = "//android.widget.TextView[@text=\"$9.99\"]")
-    private WebElement productPriceLabel;
+    /*@AndroidFindBy(xpath = "//android.widget.TextView[@text='$9.99']")
+    @iOSXCUITFindBy(xpath = "//XCUIElementTypeStaticText[@text='$9.99']")
+    private WebElement productPriceLabel;*/
+
+    private static final String ANDROID_PRODUCT_PRICE_XPATH = "//android.widget.TextView[@text='%s']";
+    private static final String IOS_PRODUCT_PRICE_XPATH = "//XCUIElementTypeStaticText[@text='%s']";
+
+    private static final String ANDROID_PRODUCT_DETAILS_XPATH = "//android.widget.TextView[@text='%s']";
+    private static final String IOS_PRODUCT_DETAILS_XPATH = "//XCUIElementTypeStaticText[@label='%s']";
+
+    public CartPage(WebDriver driver) {
+        super(driver);
+    }
 
     public void verifyCartPageIsDisplayed() {
         waitFor.until(ExpectedConditions.visibilityOf(yourCartLabel));
@@ -40,14 +41,18 @@ public class CartPage extends BasePage {
     }
 
     public void verifyProductDetailsInCart(String productDetail) {
-        waitFor.until(ExpectedConditions.visibilityOfElementLocated(AppiumBy.xpath(productDetailsInCartXpath.replaceAll("<PRODUCT_DETAIL>", productDetail))));
-        Assert.assertTrue(productDetail + " is not displayed in cart", getDriver().findElement(AppiumBy.xpath(productDetailsInCartXpath.replaceAll("<PRODUCT_DETAIL>", productDetail))).isDisplayed());
+        String xpath = getPlatformSpecificXpath(ANDROID_PRODUCT_DETAILS_XPATH, IOS_PRODUCT_DETAILS_XPATH, productDetail);
+        waitFor.until(ExpectedConditions.visibilityOfElementLocated(AppiumBy.xpath(xpath)));
+        Assert.assertTrue(productDetail + " is not displayed in cart", getDriver().findElement(AppiumBy.xpath(xpath)).isDisplayed());
         getTest().log(Status.PASS, productDetail + " is displayed in cart");
         System.out.println(productDetail + " is displayed in cart");
     }
 
-    public void verifyProductPriceInCart() {
-        Assert.assertTrue("Product price is not displayed in cart", productPriceLabel.isDisplayed());
+    public void verifyProductPriceInCart(String expectedPrice) {
+        String xpath = getPlatformSpecificXpath(ANDROID_PRODUCT_PRICE_XPATH, IOS_PRODUCT_PRICE_XPATH, expectedPrice);
+        waitFor.until(ExpectedConditions.visibilityOfElementLocated(AppiumBy.xpath(xpath)));
+        WebElement productPriceElement = getDriver().findElement(AppiumBy.xpath(xpath));
+        Assert.assertTrue("Product price is not displayed in cart", productPriceElement.isDisplayed());
         getTest().log(Status.PASS, "Product price is displayed in cart");
         System.out.println("Product price is displayed in cart");
     }

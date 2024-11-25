@@ -5,6 +5,7 @@ import driver.Driver;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import java.io.File;
@@ -28,7 +29,7 @@ public class AndroidDriverManager implements Driver {
 
     // This method is used to create an android driver instance with set of desired capabilities
     @Override
-    public AppiumDriver createInstance() throws MalformedURLException {
+    public WebDriver createInstance() throws MalformedURLException {
         DesiredCapabilities desiredCapabilities = buildAndroidCapabilities();
         driver = new AndroidDriver(new URL("http://" + HOST + ":" + PORT_FOR_ANDROID), desiredCapabilities);
         driver.startRecordingScreen();

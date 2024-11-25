@@ -48,4 +48,19 @@ public class BasePage {
             ((IOSDriver)driver).perform(Arrays.asList(tapSequence));
         }
     }
+    /**
+     * Generic method to get platform-specific XPath.
+     *
+     * @param androidXpath Template for Android XPath.
+     * @param iosXpath     Template for iOS XPath.
+     * @param value        The dynamic value to be injected into the XPath.
+     * @return The formatted platform-specific XPath.
+     */
+    protected String getPlatformSpecificXpath(String androidXpath, String iosXpath, String value) {
+        if (properties.getProperty("platform").equalsIgnoreCase("android")) {
+            return String.format(androidXpath, value);
+        } else {
+            return String.format(iosXpath, value);
+        }
+    }
 }
